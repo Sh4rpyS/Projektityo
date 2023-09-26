@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <tuple>
 
 #include "room.h"
 
@@ -9,8 +10,8 @@ public:
     void stop();
 
     void printWelcomeMessage();
-    int getStartUserInput();
-    void processStartUserInput(int userInput);
+    std::string getStartUserInput();
+    void processStartUserInput(std::string userInput);
 
     bool getRunState();
 
