@@ -8,8 +8,27 @@ void Application::start()
     // Main loop, ending the loop stops the application
     while (getRunState())
     {
-        // Get the user input and process it
-        processStartUserInput(getStartUserInput());
+        if (getMenuState() == "hotelMain")
+        {
+            // Get the user input and process it
+            processStartUserInput(getStartUserInput());
+        }
+        else if (getMenuState() == "hotelReserve")
+        {
+            
+        }
+        else if (getMenuState() == "hotelKey")
+        {
+            
+        }
+        else if (getMenuState() == "room")
+        {
+            
+        }
+        else if (getMenuState() == "work")
+        {
+            
+        }
     }
 }
 
@@ -49,7 +68,8 @@ std::string Application::getStartUserInput()
         {1, std::tuple("Varaa huone", "reserveRoom")},
         {2, std::tuple("Lunasta huoneen avain", "getKey")},
         {3, std::tuple("Mene huoneeseen", "enterRoom")},
-        {4, std::tuple("Lopeta", "quit")}
+        {4, std::tuple("Poistu ja mene toihin", "work")},
+        {5, std::tuple("Lopeta", "quit")}
     };
 
     std::cout << std::endl << "Valitse toiminto (Kirjoita vain numero):" << std::endl;
@@ -61,7 +81,7 @@ std::string Application::getStartUserInput()
     }
 
     // Gets the user input
-    std::cout << "Valinta: ";
+    std::cout << std::endl << "Valinta: ";
     int inputValue;
     std::cin >> inputValue;
 
@@ -91,8 +111,34 @@ void Application::processStartUserInput(std::string userInput)
     {
         stop();
     }
+    else if (userInput == "reserveRoom")
+    {
+        setMenuState("hotelReserve");
+    }
+    else if (userInput == "getKey")
+    {
+        setMenuState("hotelKey");
+    }
+    else if (userInput == "enterRoom")
+    {
+        setMenuState("room");
+    }
+    else if (userInput == "work")
+    {
+        setMenuState("work");
+    }
     else // Invalid input
     {
         std::cout << "Anteeksi, tama ei ollut vaihtoehto." << std::endl;
     }
+}
+
+void Application::setMenuState(std::string state)
+{
+    menuState = state;
+}
+
+std::string Application::getMenuState()
+{
+    return menuState;
 }

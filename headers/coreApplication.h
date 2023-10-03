@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <map>
 #include <tuple>
@@ -13,7 +15,16 @@ public:
     std::string getStartUserInput();
     void processStartUserInput(std::string userInput);
 
+    std::string getReserveUserInput();
+    void processReserveUserInput(std::string userInput);
+
+    std::string getKeyUserInput();
+    void processKeyUserInput(std::string userInput);
+
     bool getRunState();
+    std::string getMenuState();
+
+    void setMenuState(std::string state);
 
 private:
     // Will contain all the rooms in a list
@@ -23,4 +34,6 @@ private:
     
     // If this is false, the application will close
     bool runState { true };
+
+    std::string menuState { "start" };
 };
