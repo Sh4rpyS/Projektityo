@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <string>
 #include <tuple>
 
 #include "room.h"
@@ -12,18 +13,14 @@ public:
     void stop();
 
     void printWelcomeMessage();
-    std::string getStartUserInput();
-    void processStartUserInput(std::string userInput);
+    void printMessage(std::string message);
 
-    std::string getReserveUserInput();
-    void processReserveUserInput(std::string userInput);
-
-    std::string getKeyUserInput();
-    void processKeyUserInput(std::string userInput);
+    std::string printAndGetUserInput(std::map<int, std::tuple<std::string, std::string>> inputOptions);
+    void processUserInput(std::string userInput);
 
     bool getRunState();
+    
     std::string getMenuState();
-
     void setMenuState(std::string state);
 
 private:

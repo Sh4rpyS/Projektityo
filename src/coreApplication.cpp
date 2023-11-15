@@ -10,8 +10,15 @@ void Application::start()
     {
         if (getMenuState() == "hotelMain")
         {
+            std::map<int, std::tuple<std::string, std::string>> inputOptions = {
+                {1, std::tuple("Varaa huone", "reserveRoom")},
+                {2, std::tuple("Lunasta huoneen avain", "getKey")},
+                {3, std::tuple("Mene huoneeseen", "enterRoom")},
+                {4, std::tuple("Poistu ja mene toihin", "work")},
+                {5, std::tuple("Lopeta", "quit")}
+            };
             // Get the user input and process it
-            processStartUserInput(getStartUserInput());
+            processUserInput(printAndGetUserInput(inputOptions));
         }
         else if (getMenuState() == "hotelReserve")
         {
@@ -57,13 +64,16 @@ void Application::printWelcomeMessage()
     if (std::cin.get() == '\n') 
     {
         system("cls");
+        setMenuState("hotelMain");
     }
 }
 
-std::string Application::getStartUserInput()
+std::string Application::printAndGetUserInput(std::map<int, std::tuple<std::string, std::string>> inputOptions)
 {
     // Stores all the input options for modularity and better checking
     // Includes an ID (This is the one that user chooses), which then contains a tuple with the title and the action
+
+    /*
     std::map<int, std::tuple<std::string, std::string>> inputOptions = {
         {1, std::tuple("Varaa huone", "reserveRoom")},
         {2, std::tuple("Lunasta huoneen avain", "getKey")},
@@ -71,6 +81,7 @@ std::string Application::getStartUserInput()
         {4, std::tuple("Poistu ja mene toihin", "work")},
         {5, std::tuple("Lopeta", "quit")}
     };
+    */
 
     std::cout << std::endl << "Valitse toiminto (Kirjoita vain numero):" << std::endl;
 
@@ -86,7 +97,7 @@ std::string Application::getStartUserInput()
     std::cin >> inputValue;
 
     // Check if the input is not found in the options or is not a number
-    if (inputOptions.find(inputValue) == inputOptions.end() || std::cin.fail())
+    if (inputOptions.find(inputValue) == inputOptions.end())
     {
         // Clears the input and ignores it
         std::cin.clear();
@@ -100,7 +111,7 @@ std::string Application::getStartUserInput()
     return std::get<1>(inputOptions[inputValue]);
 }
 
-void Application::processStartUserInput(std::string userInput)
+void Application::processUserInput(std::string userInput)
 {
     // Clears the screen
     system("cls");
@@ -129,8 +140,27 @@ void Application::processStartUserInput(std::string userInput)
     }
     else // Invalid input
     {
-        std::cout << "Anteeksi, tama ei ollut vaihtoehto." << std::endl;
+        printMessage("Anteeksi, tama ei ollut vaihtoehto.");
     }
+}
+
+void Application::printMessage(std::string message)
+{
+    std::cout << ".";
+    for (int i = 0; i < message.length(); i++)
+    {
+        std::cout << "-";
+    }
+    std::cout << "." << std::endl;
+    
+    std::cout << "|" << message << "|" << std::endl;
+
+    std::cout << "'";
+    for (int i = 0; i < message.length(); i++)
+    {
+        std::cout << "-";
+    }
+    std::cout << "'" << std::endl;
 }
 
 void Application::setMenuState(std::string state)

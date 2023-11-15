@@ -1,3 +1,3 @@
 @echo off
-g++ -o ProjektiTyo.exe src/*.cpp -Iheaders -static -static-libgcc
+g++ -o ProjektiTyo.exe src/*.cpp -Iinclude -static -static-libgcc
 pause
