@@ -58,6 +58,9 @@
         "xutility": "cpp",
         "map": "cpp",
         "xtree": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "algorithm": "cpp",
+        "optional": "cpp",
+        "random": "cpp"
     }
 }

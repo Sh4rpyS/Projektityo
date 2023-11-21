@@ -25,6 +25,9 @@ public:
     void processUserInput(std::string userInput);
 
     bool getRunState();
+
+    int getWorkNumber();
+    void setWorkNumber(int number);
     
     std::string getMenuState();
     void setMenuState(std::string state);
@@ -37,6 +40,9 @@ private:
     
     // If this is false, the application will close
     bool runState { true };
+
+    int randomWorkNumber { 0 };
+    long balance { 1000 };
 
     std::string menuState { "start" };
 };

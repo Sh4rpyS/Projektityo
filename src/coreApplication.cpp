@@ -5,13 +5,21 @@ void Application::start()
     // Welcomes the user
     printWelcomeMessage();
 
+    // Creates a seed for the random numbers based on time
+    srand(time(NULL));
+
     std::map<int, std::tuple<std::string, std::string>> inputOptions;
 
     // Main loop, ending the loop stops the application
     while (getRunState())
     {
+        // Prints the balance of the user
+        printMessage("Current balance: " + std::to_string(balance) + " euros.");
+
         if (getMenuState() == "hotelMain")
         {
+            // Stores all the input options for modularity and better checking
+            // Includes an ID (This is the one that user chooses), which then contains a tuple with the title and the action
             inputOptions = {
                 {1, std::tuple("Varaa huone", "reserveRoom")},
                 {2, std::tuple("Lunasta huoneen avain", "getKey")},
@@ -23,13 +31,13 @@ void Application::start()
         {
             inputOptions = {
                 {1, std::tuple("Varaa huone", "reserveRoom")},
-                {2, std::tuple("Takaisin", "back")}
+                {2, std::tuple("Palaa aulaan", "back")}
             };
         }
         else if (getMenuState() == "hotelKey")
         {
             inputOptions = {
-                {1, std::tuple("Takaisin", "back")}
+                {1, std::tuple("Palaa aulaan", "back")}
             };
         }
         else if (getMenuState() == "room")
@@ -43,6 +51,7 @@ void Application::start()
         }
         else if (getMenuState() == "work")
         {
+            printMessage("Do work: " + std::to_string(getWorkNumber()) + " times.");
             inputOptions = {
                 {1, std::tuple("Tee Toita", "doWork")},
                 {2, std::tuple("Lahde pois toista", "back")}
@@ -54,11 +63,13 @@ void Application::start()
     }
 }
 
+// Stops the application
 void Application::stop()
 {
     runState = false;
 }
 
+// Gets the application status, whether the application is running or not
 bool Application::getRunState()
 {
     return runState;
@@ -83,21 +94,9 @@ void Application::printWelcomeMessage()
     }
 }
 
+// Is used to print the UI and getting the user input from it
 std::string Application::printAndGetUserInput(std::map<int, std::tuple<std::string, std::string>> inputOptions)
 {
-    // Stores all the input options for modularity and better checking
-    // Includes an ID (This is the one that user chooses), which then contains a tuple with the title and the action
-
-    /*
-    std::map<int, std::tuple<std::string, std::string>> inputOptions = {
-        {1, std::tuple("Varaa huone", "reserveRoom")},
-        {2, std::tuple("Lunasta huoneen avain", "getKey")},
-        {3, std::tuple("Mene huoneeseen", "enterRoom")},
-        {4, std::tuple("Poistu ja mene toihin", "work")},
-        {5, std::tuple("Lopeta", "quit")}
-    };
-    */
-
     std::cout << std::endl << "Valitse toiminto (Kirjoita vain numero):" << std::endl;
 
     // Loops through the possible input options and presents them
@@ -126,6 +125,7 @@ std::string Application::printAndGetUserInput(std::map<int, std::tuple<std::stri
     return std::get<1>(inputOptions[inputValue]);
 }
 
+// Processes the user input that was gathered from the other function
 void Application::processUserInput(std::string userInput)
 {
     // Clears the screen
@@ -137,34 +137,65 @@ void Application::processUserInput(std::string userInput)
     {
         stop();
     }
+
+    // Always returns the user to the main lobby of the hotel
     else if (userInput == "back")
     {
         setMenuState("hotelMain");
     }
+
+    // This is the room where you can reserve new rooms
     else if (userInput == "reserveRoom")
     {
         setMenuState("hotelReserve");
     }
+
+    // You can receive the key for your room here
     else if (userInput == "getKey")
     {
         setMenuState("hotelKey");
     }
+
+    // This lets you into your rooms
     else if (userInput == "enterRoom")
     {
         setMenuState("room");
     }
+
+    // Makes you go to your workplace
     else if (userInput == "work")
     {
         setMenuState("work");
+        setWorkNumber(rand() % 8 + 4);
     }
+
+    // Does work at the workplace
     else if (userInput == "doWork")
     {
 
+        // Checks if the work is done
+        if (getWorkNumber() <= 1)
+        {
+            // Gets the paycheck, random between 90-150 euros
+            int payCheck = rand() % 60 + 90;
+            balance += payCheck;
+
+            // Returns you back to the hotel and gives you the paycheck
+            printMessage("Sait tyot tehtya ja palasit takaisin hotellille. Ansaitsit " + std::to_string(payCheck) + " euroa.");
+            setMenuState("hotelMain");
+        }
+
+        // Decreases the work amount
+        setWorkNumber(getWorkNumber() - 1);
     }
+
+    // This pays the bills that comes for the hotelroom
     else if (userInput == "payBills")
     {
 
     }
+
+    // This can be used for leaving the hotelroom, meaning you will lose the access to the room
     else if (userInput == "returnKey")
     {
 
@@ -180,6 +211,7 @@ void Application::processUserInput(std::string userInput)
 // The messages are presented in a box on top of the console
 void Application::printMessage(std::string message)
 {
+    // Prints the upper line
     std::cout << ".";
     for (int i = 0; i < message.length(); i++)
     {
@@ -187,8 +219,10 @@ void Application::printMessage(std::string message)
     }
     std::cout << "." << std::endl;
     
+    // Prints the message
     std::cout << "|" << message << "|" << std::endl;
 
+    // Prints the bottom line
     std::cout << "'";
     for (int i = 0; i < message.length(); i++)
     {
@@ -197,12 +231,26 @@ void Application::printMessage(std::string message)
     std::cout << "'" << std::endl;
 }
 
+// Sets the user's room
 void Application::setMenuState(std::string state)
 {
     menuState = state;
 }
 
+// Gets the room the user is in
 std::string Application::getMenuState()
 {
     return menuState;
+}
+
+// Can be used to change the number used in work
+void Application::setWorkNumber(int number)
+{
+    randomWorkNumber = number;
+}
+
+// Returns the work number
+int Application::getWorkNumber()
+{
+    return randomWorkNumber;
 }
