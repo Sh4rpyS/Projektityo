@@ -5,37 +5,52 @@ void Application::start()
     // Welcomes the user
     printWelcomeMessage();
 
+    std::map<int, std::tuple<std::string, std::string>> inputOptions;
+
     // Main loop, ending the loop stops the application
     while (getRunState())
     {
         if (getMenuState() == "hotelMain")
         {
-            std::map<int, std::tuple<std::string, std::string>> inputOptions = {
+            inputOptions = {
                 {1, std::tuple("Varaa huone", "reserveRoom")},
                 {2, std::tuple("Lunasta huoneen avain", "getKey")},
                 {3, std::tuple("Mene huoneeseen", "enterRoom")},
-                {4, std::tuple("Poistu ja mene toihin", "work")},
-                {5, std::tuple("Lopeta", "quit")}
+                {4, std::tuple("Lopeta", "quit")}
             };
-            // Get the user input and process it
-            processUserInput(printAndGetUserInput(inputOptions));
         }
         else if (getMenuState() == "hotelReserve")
         {
-            
+            inputOptions = {
+                {1, std::tuple("Varaa huone", "reserveRoom")},
+                {2, std::tuple("Takaisin", "back")}
+            };
         }
         else if (getMenuState() == "hotelKey")
         {
-            
+            inputOptions = {
+                {1, std::tuple("Takaisin", "back")}
+            };
         }
         else if (getMenuState() == "room")
         {
-            
+            inputOptions = {
+                {1, std::tuple("Kay toissa", "work")},
+                {2, std::tuple("Maksa laskut", "payBills")},
+                {3, std::tuple("Lopeta varaus ja palauta avain", "returnKey")},
+                {4, std::tuple("Palaa aulaan", "back")}
+            };
         }
         else if (getMenuState() == "work")
         {
-            
+            inputOptions = {
+                {1, std::tuple("Tee Toita", "doWork")},
+                {2, std::tuple("Lahde pois toista", "back")}
+            };
         }
+
+        // Get the user input and process it
+        processUserInput(printAndGetUserInput(inputOptions));
     }
 }
 
@@ -122,6 +137,10 @@ void Application::processUserInput(std::string userInput)
     {
         stop();
     }
+    else if (userInput == "back")
+    {
+        setMenuState("hotelMain");
+    }
     else if (userInput == "reserveRoom")
     {
         setMenuState("hotelReserve");
@@ -138,12 +157,27 @@ void Application::processUserInput(std::string userInput)
     {
         setMenuState("work");
     }
+    else if (userInput == "doWork")
+    {
+
+    }
+    else if (userInput == "payBills")
+    {
+
+    }
+    else if (userInput == "returnKey")
+    {
+
+    }
+
     else // Invalid input
     {
         printMessage("Anteeksi, tama ei ollut vaihtoehto.");
     }
 }
 
+// This function can be used to print messages for the user
+// The messages are presented in a box on top of the console
 void Application::printMessage(std::string message)
 {
     std::cout << ".";

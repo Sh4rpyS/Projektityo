@@ -1,9 +1,15 @@
 #pragma once
 
 #include <iostream>
+
+// General usage (Lists and stuff)
 #include <map>
 #include <string>
 #include <tuple>
+
+// Needed for the random
+#include <stdlib.h>
+#include <ctime>
 
 #include "room.h"
 
