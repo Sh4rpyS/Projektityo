@@ -36,16 +36,18 @@ void Application::start()
                 {4, std::tuple("Lopeta", "quit")}
             };
         }
-        else if (getMenuState() == "hotelReserve")
+        else if (getMenuState() == "reserveRoom")
         {
             // Prints the available rooms
-            printMessage(std::to_string(getFreeRoomCount()) + "/" + std::to_string(getRoomCount()) +" huonetta vapaana.");
+            printMessage(std::to_string(getFreeRoomCount()) + "/" + std::to_string(getRoomCount()) + " huonetta vapaana.");
 
             inputOptions = {
-                {1, std::tuple("Varaa huone", "reserveRoom")},
-                {2, std::tuple("Palaa aulaan", "back")}
+                {1, std::tuple("Varaa yhden henkilon huone", "reserveRoomSingle")},
+                {2, std::tuple("Varaa kahden henkilon huone", "reserveRoomDouble")},
+                {3, std::tuple("Palaa aulaan", "back")}
             };
         }
+
         else if (getMenuState() == "hotelKey")
         {
             inputOptions = {
@@ -57,8 +59,7 @@ void Application::start()
             inputOptions = {
                 {1, std::tuple("Kay toissa", "work")},
                 {2, std::tuple("Maksa laskut", "payBills")},
-                {3, std::tuple("Lopeta varaus ja palauta avain", "returnKey")},
-                {4, std::tuple("Palaa aulaan", "back")}
+                {3, std::tuple("Palaa aulaan", "back")}
             };
         }
         else if (getMenuState() == "work")
@@ -192,7 +193,7 @@ void Application::processUserInput(std::string userInput)
     // This is the room where you can reserve new rooms
     else if (userInput == "reserveRoom")
     {
-        setMenuState("hotelReserve");
+        setMenuState("reserveRoom");
     }
 
     // You can receive the key for your room here
