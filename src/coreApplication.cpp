@@ -8,13 +8,22 @@ void Application::start()
     // Creates a seed for the random numbers based on time
     srand(time(NULL));
 
+    // Creates the room count between 40-300 and makes it an even number
+    int randomRoomCount = rand() % 260 + 41;
+    if (randomRoomCount % 2 == 1) 
+    {
+        randomRoomCount -= 1;
+    }
+    // Creates the rooms
+    createRooms(randomRoomCount);
+
     std::map<int, std::tuple<std::string, std::string>> inputOptions;
 
     // Main loop, ending the loop stops the application
     while (getRunState())
     {
         // Prints the balance of the user
-        printMessage("Current balance: " + std::to_string(balance) + " euros.");
+        printMessage("Saldo: " + std::to_string(balance) + " euroa.");
 
         if (getMenuState() == "hotelMain")
         {
@@ -29,6 +38,9 @@ void Application::start()
         }
         else if (getMenuState() == "hotelReserve")
         {
+            // Prints the available rooms
+            printMessage(std::to_string(getFreeRoomCount()) + "/" + std::to_string(getRoomCount()) +" huonetta vapaana.");
+
             inputOptions = {
                 {1, std::tuple("Varaa huone", "reserveRoom")},
                 {2, std::tuple("Palaa aulaan", "back")}
@@ -51,7 +63,7 @@ void Application::start()
         }
         else if (getMenuState() == "work")
         {
-            printMessage("Do work: " + std::to_string(getWorkNumber()) + " times.");
+            printMessage("Tee toita: " + std::to_string(getWorkNumber()) + " kertaa.");
             inputOptions = {
                 {1, std::tuple("Tee Toita", "doWork")},
                 {2, std::tuple("Lahde pois toista", "back")}
@@ -61,6 +73,35 @@ void Application::start()
         // Get the user input and process it
         processUserInput(printAndGetUserInput(inputOptions));
     }
+}
+
+// Creates the rooms for the hotel
+void Application::createRooms(int randomRoomCount)
+{
+    roomCount = randomRoomCount;
+
+    // Creates the given amount of rooms
+    for (int i = 0; i < roomCount; i++)
+    {
+        // Makes half of the rooms to be 2 person rooms
+        int roomSize { 1 };
+        if (roomCount > (int)roomCount/2)
+        {
+            roomSize = 2;
+        }
+
+        // 30% chance for the room to be reserved
+        bool reserved { false };
+        if (rand() % 10 >= 7)
+        {
+            reserved = true;
+            reservedRooms += 1;
+        }
+
+        rooms[i] = new Room(reserved, roomSize);
+    }
+
+    freeRooms = roomCount - reservedRooms;
 }
 
 // Stops the application
@@ -78,19 +119,23 @@ bool Application::getRunState()
 // This function will be run once when the application is run to welcome the user
 void Application::printWelcomeMessage()
 {
-    std::string blankInput { " " };
-
-    std::cout << "Tervetuloa hotelliin!" << std::endl;
-    std::cout << "Voit aloittaa esimerkiksi varaamalla huoneen, tai jos sinulla on jo varaus, voit lunastaa huoneesi avaimen." << std::endl;
-
-    // Pauses the application until the user proceeds
-    std::cout << std::endl << "Paina ENTER jatkaaksesi" << std::endl;
-
-    // Gets the blank user input and clears the command line
-    if (std::cin.get() == '\n') 
+    while (true)
     {
-        system("cls");
-        setMenuState("hotelMain");
+        std::string blankInput { " " };
+
+        std::cout << "Tervetuloa hotelliin!" << std::endl;
+        std::cout << "Voit aloittaa esimerkiksi varaamalla huoneen, tai jos sinulla on jo varaus, voit lunastaa huoneesi avaimen." << std::endl;
+
+        // Pauses the application until the user proceeds
+        std::cout << std::endl << "Paina ENTER jatkaaksesi" << std::endl;
+
+        // Gets the blank user input and clears the command line
+        if (std::cin.get() == '\n') 
+        {
+            system("cls");
+            setMenuState("hotelMain");
+            break;
+        }
     }
 }
 
@@ -176,8 +221,8 @@ void Application::processUserInput(std::string userInput)
         // Checks if the work is done
         if (getWorkNumber() <= 1)
         {
-            // Gets the paycheck, random between 90-150 euros
-            int payCheck = rand() % 60 + 90;
+            // Gets the paycheck, random between 40-100 euros
+            int payCheck = rand() % 60 + 40;
             balance += payCheck;
 
             // Returns you back to the hotel and gives you the paycheck
@@ -253,4 +298,22 @@ void Application::setWorkNumber(int number)
 int Application::getWorkNumber()
 {
     return randomWorkNumber;
+}
+
+// Gets the overall room count
+int Application::getRoomCount()
+{
+    return roomCount;
+}
+
+// Gets the amount of reserved rooms
+int Application::getReservedRoomCount()
+{
+    return reservedRooms;
+}
+
+// Gets the amount of free rooms
+int Application::getFreeRoomCount()
+{
+    return freeRooms;
 }

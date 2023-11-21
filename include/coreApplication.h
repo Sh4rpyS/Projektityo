@@ -36,13 +36,22 @@ private:
     // Will contain all the rooms in a list
     // First value is the room ID, and the second value stores the memory address of the room
     std::map<int, Room*> rooms;
-    const int roomCount { 100 };
     
     // If this is false, the application will close
     bool runState { true };
 
     int randomWorkNumber { 0 };
-    long balance { 1000 };
+    long balance { 500 };
 
     std::string menuState { "start" };
+
+    void createRooms(int randomRoomCount);
+
+    int roomCount { 0 };
+    int reservedRooms { 0 };
+    int freeRooms { 0 };
+
+    int getRoomCount();
+    int getReservedRoomCount();
+    int getFreeRoomCount();
 };
