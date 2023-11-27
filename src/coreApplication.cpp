@@ -31,11 +31,12 @@ void Application::start()
             // Includes an ID (This is the one that user chooses), which then contains a tuple with the title and the action
             inputOptions = {
                 {1, std::tuple("Varaa huone", "reserveRoom")},
-                {2, std::tuple("Lunasta huoneen avain", "getKey")},
-                {3, std::tuple("Mene huoneeseen", "enterRoom")},
+                {2, std::tuple("Hallitse huoneita", "manageRooms")},
+                {3, std::tuple("Kay toissa", "work")},
                 {4, std::tuple("Lopeta", "quit")}
             };
         }
+
         else if (getMenuState() == "reserveRoom")
         {
             // Prints the available rooms
@@ -48,20 +49,13 @@ void Application::start()
             };
         }
 
-        else if (getMenuState() == "hotelKey")
+        else if (getMenuState() == "manageRooms")
         {
             inputOptions = {
                 {1, std::tuple("Palaa aulaan", "back")}
             };
         }
-        else if (getMenuState() == "room")
-        {
-            inputOptions = {
-                {1, std::tuple("Kay toissa", "work")},
-                {2, std::tuple("Maksa laskut", "payBills")},
-                {3, std::tuple("Palaa aulaan", "back")}
-            };
-        }
+
         else if (getMenuState() == "work")
         {
             printMessage("Tee toita: " + std::to_string(getWorkNumber()) + " kertaa.");
@@ -153,6 +147,7 @@ std::string Application::printAndGetUserInput(std::map<int, std::tuple<std::stri
 
     // Gets the user input
     std::cout << std::endl << "Valinta: ";
+    
     int inputValue;
     std::cin >> inputValue;
 
@@ -196,16 +191,10 @@ void Application::processUserInput(std::string userInput)
         setMenuState("reserveRoom");
     }
 
-    // You can receive the key for your room here
-    else if (userInput == "getKey")
-    {
-        setMenuState("hotelKey");
-    }
-
     // This lets you into your rooms
-    else if (userInput == "enterRoom")
+    else if (userInput == "manageRooms")
     {
-        setMenuState("room");
+        setMenuState("manageRooms");
     }
 
     // Makes you go to your workplace
@@ -233,18 +222,6 @@ void Application::processUserInput(std::string userInput)
 
         // Decreases the work amount
         setWorkNumber(getWorkNumber() - 1);
-    }
-
-    // This pays the bills that comes for the hotelroom
-    else if (userInput == "payBills")
-    {
-
-    }
-
-    // This can be used for leaving the hotelroom, meaning you will lose the access to the room
-    else if (userInput == "returnKey")
-    {
-
     }
 
     else // Invalid input
