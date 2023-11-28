@@ -1,11 +1,11 @@
 #include "room.h"
 
 // Room constructor
-Room::Room(bool reserved, int roomSize, int roomNumber)
+Room::Room(bool reserved, int size, int number)
 {
     reserveStatus = reserved;
-    roomSize = roomSize;
-    roomNumber = roomNumber;
+    roomSize = size;
+    roomNumber = number;
 }
 
 void Room::changeReservation(bool reservation)

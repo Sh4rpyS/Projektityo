@@ -3,7 +3,7 @@
 class Room
 {
 public:
-    Room(bool reserved, int roomSize, int roomNumber); // Constructor
+    Room(bool reserved, int size, int number); // Constructor
 
     void changeReservation(bool reservation);
 

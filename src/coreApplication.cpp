@@ -49,6 +49,26 @@ void Application::start()
             };
         }
 
+        else if (getMenuState() == "reserveRoomSelection")
+        {
+            std::cout << std::endl << "Vapaana olevat huoneet: " << std::endl;
+            for (int i = 0; i < selectableRoomCount; i++)
+            {
+                if (i >= 10 * page && i < 10*page+10)
+                {
+                    std::cout << i - (page*10) + 10 << ": Huone " << rooms[selectableRooms[i]]->getRoomNumber() << std::endl;
+                }
+            }
+
+            printMessage("Sivu " + std::to_string(page+1) + "/" + std::to_string(maxPage+1));
+
+            inputOptions = {
+                {1, std::tuple("Seuraava sivu", "nextPage")},
+                {2, std::tuple("Edellinen sivu", "previousPage")},
+                {3, std::tuple("Palaa aulaan", "back")}
+            };
+        }
+
         else if (getMenuState() == "manageRooms")
         {
             inputOptions = {
@@ -80,39 +100,45 @@ void Application::createRooms(int randomRoomCount)
     {
         // Makes half of the rooms to be 2 person rooms
         int roomSize { 1 };
-        if (roomCount > (int)roomCount/2)
+        if (i >= (int)(roomCount/2))
         {
             roomSize = 2;
         }
 
         // 30% chance for the room to be reserved
         bool reserved { false };
+        
         if (rand() % 10 >= 7)
         {
             reserved = true;
             reservedRooms += 1;
         }
 
-        rooms[i] = new Room(reserved, roomSize, (i + 1));
+        rooms[i] = new Room(reserved, roomSize, i + 1);
     }
 
     freeRooms = roomCount - reservedRooms;
 }
 
-std::map<int, Room*> Application::getRooms(bool reserveStatus, int roomSize)
+void Application::getRooms(bool reserveStatus, int roomSize)
 {
-    std::map<int, Room*> collectedRooms;
-    int roomCounter { 0 };
+    selectableRoomCount = 0;
 
-    for (auto room : rooms)
+    for (int i = 0; i < roomCount; i++)
     {
-        if (room.second->getRoomReserveStatus() == reserveStatus && room.second->getRoomSize() == roomSize)
+        if (rooms[i]->getRoomReserveStatus() == reserveStatus && rooms[i]->getRoomSize() == roomSize)
         {
-            collectedRooms[roomCounter] = room.second; 
+            selectableRooms[selectableRoomCount] = i;
+            selectableRoomCount += 1;
         }
     }
 
-    return collectedRooms;
+    maxPage = (int)(selectableRoomCount / 10);
+
+    if ((int)(selectableRoomCount % 10 == 0))
+    {
+        maxPage -= 1;
+    }
 }
 
 // Stops the application
@@ -207,6 +233,36 @@ void Application::processUserInput(std::string userInput)
         setMenuState("reserveRoom");
     }
 
+    else if (userInput == "reserveRoomSingle")
+    {
+        setMenuState("reserveRoomSelection");
+        page = 0;
+        getRooms(false, 1);
+    }
+
+    else if (userInput == "reserveRoomDouble")
+    {
+        setMenuState("reserveRoomSelection");
+        page = 0;
+        getRooms(false, 2);
+    }
+
+    else if (userInput == "nextPage")
+    {
+        if (page < maxPage)
+        {
+            page += 1;
+        }
+    }
+
+    else if (userInput == "previousPage")
+    {
+        if (page > 0)
+        {
+            page -= 1;
+        }
+    }
+
     // This lets you into your rooms
     else if (userInput == "manageRooms")
     {
@@ -252,18 +308,18 @@ void Application::printMessage(std::string message)
 {
     // Prints the upper line
     std::cout << ".";
-    for (int i = 0; i < message.length(); i++)
+    for (int i = 0; i < message.length()+2; i++)
     {
         std::cout << "-";
     }
     std::cout << "." << std::endl;
     
     // Prints the message
-    std::cout << "|" << message << "|" << std::endl;
+    std::cout << "| " << message << " |" << std::endl;
 
     // Prints the bottom line
     std::cout << "'";
-    for (int i = 0; i < message.length(); i++)
+    for (int i = 0; i < message.length()+2; i++)
     {
         std::cout << "-";
     }

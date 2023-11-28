@@ -55,5 +55,9 @@ private:
     int getReservedRoomCount();
     int getFreeRoomCount();
 
-    std::map<int, Room*> getRooms(bool reserveStatus, int roomSize);
+    int page { 0 };
+    int maxPage { 0 };
+    int selectableRooms[300] = {};
+    int selectableRoomCount { 0 };
+    void getRooms(bool reserveStatus, int roomSize);
 };
