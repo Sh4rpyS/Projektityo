@@ -23,7 +23,7 @@ void Application::start()
     while (getRunState())
     {
         // Prints the balance of the user
-        printMessage("Saldo: " + std::to_string(balance) + " euroa.");
+        printMessage("Saldo: " + std::to_string(balance) + " euroa. | Paiva " + std::to_string(day));
 
         if (getMenuState() == "hotelMain")
         {
@@ -32,8 +32,9 @@ void Application::start()
             inputOptions = {
                 {1, std::tuple("Varaa huone", "reserveRoom")},
                 {2, std::tuple("Hallitse huoneita", "manageRooms")},
-                {3, std::tuple("Kay toissa", "work")},
-                {4, std::tuple("Lopeta", "quit")}
+                {3, std::tuple("Mene toihin", "work")},
+                {4, std::tuple("Mene nukkumaan", "sleep")},
+                {5, std::tuple("Lopeta", "quit")}
             };
         }
 
@@ -276,6 +277,19 @@ void Application::processUserInput(std::string userInput)
         setWorkNumber(rand() % 8 + 4);
     }
 
+    else if (userInput == "sleep")
+    {
+        if (workDone)
+        {
+            day += 1;
+            workDone = false;
+        }
+        else 
+        {
+            printMessage("Sinun taytyy suorittaa paivan tyot mennaksesi nukkumaan.");
+        }
+    }
+
     // Does work at the workplace
     else if (userInput == "doWork")
     {
@@ -286,6 +300,7 @@ void Application::processUserInput(std::string userInput)
             // Gets the paycheck, random between 40-100 euros
             int payCheck = rand() % 60 + 40;
             balance += payCheck;
+            workDone = true;
 
             // Returns you back to the hotel and gives you the paycheck
             printMessage("Sait tyot tehtya ja palasit takaisin hotellille. Ansaitsit " + std::to_string(payCheck) + " euroa.");

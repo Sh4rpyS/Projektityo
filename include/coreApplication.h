@@ -42,6 +42,8 @@ private:
 
     int randomWorkNumber { 0 };
     long balance { 500 };
+    int day { 1 };
+    bool workDone { false };
 
     std::string menuState { "start" };
 
