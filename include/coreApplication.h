@@ -54,4 +54,6 @@ private:
     int getRoomCount();
     int getReservedRoomCount();
     int getFreeRoomCount();
+
+    std::map<int, Room*> getRooms(bool reserveStatus, int roomSize);
 };

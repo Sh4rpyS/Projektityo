@@ -93,10 +93,26 @@ void Application::createRooms(int randomRoomCount)
             reservedRooms += 1;
         }
 
-        rooms[i] = new Room(reserved, roomSize);
+        rooms[i] = new Room(reserved, roomSize, (i + 1));
     }
 
     freeRooms = roomCount - reservedRooms;
+}
+
+std::map<int, Room*> Application::getRooms(bool reserveStatus, int roomSize)
+{
+    std::map<int, Room*> collectedRooms;
+    int roomCounter { 0 };
+
+    for (auto room : rooms)
+    {
+        if (room.second->getRoomReserveStatus() == reserveStatus && room.second->getRoomSize() == roomSize)
+        {
+            collectedRooms[roomCounter] = room.second; 
+        }
+    }
+
+    return collectedRooms;
 }
 
 // Stops the application
