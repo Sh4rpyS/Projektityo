@@ -40,7 +40,7 @@ void Application::start()
 
         else if (getMenuState() == "reserveRoom")
         {
-            // Prints the available rooms
+            // Prints the available room count
             printMessage(std::to_string(getFreeRoomCount()) + "/" + std::to_string(getRoomCount()) + " huonetta vapaana.");
 
             inputOptions = {
@@ -52,6 +52,7 @@ void Application::start()
 
         else if (getMenuState() == "reserveRoomSelection")
         {
+            // Prints the available rooms in a list that the user can use to select the room they want
             std::cout << std::endl << "Vapaana olevat huoneet: " << std::endl;
             for (int i = 0; i < selectableRoomCount; i++)
             {
@@ -61,6 +62,7 @@ void Application::start()
                 }
             }
 
+            // Prints the page number
             printMessage("Sivu " + std::to_string(page+1) + "/" + std::to_string(maxPage+1));
 
             inputOptions = {
