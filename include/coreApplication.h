@@ -38,14 +38,14 @@ private:
     std::map<int, Room*> rooms;
     
     // If this is false, the application will close
-    bool runState { true };
+    bool runState { false };
 
     int randomWorkNumber { 0 };
-    long balance { 500 };
-    int day { 1 };
-    bool workDone { false };
+    long balance { 0 };
+    int day { 0 };
+    int workDone { 0 };
 
-    std::string menuState { "start" };
+    std::string menuState { " " };
 
     void createRooms(int randomRoomCount);
 

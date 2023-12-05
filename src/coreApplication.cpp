@@ -2,9 +2,6 @@
 
 void Application::start()
 {
-    // Welcomes the user
-    printWelcomeMessage();
-
     // Creates a seed for the random numbers based on time
     srand(time(NULL));
 
@@ -18,6 +15,14 @@ void Application::start()
     createRooms(randomRoomCount);
 
     std::map<int, std::tuple<std::string, std::string>> inputOptions;
+
+    balance = 500;
+    day = 1;
+    menuState = "start";
+    runState = true;
+
+    // Welcomes the user
+    printWelcomeMessage();
 
     // Main loop, ending the loop stops the application
     while (getRunState())
@@ -36,6 +41,17 @@ void Application::start()
                 {4, std::tuple("Mene nukkumaan", "sleep")},
                 {5, std::tuple("Lopeta", "quit")}
             };
+
+            if (balance > 999999)
+            {
+                inputOptions = {
+                {1, std::tuple("Varaa huone", "reserveRoom")},
+                {2, std::tuple("Hallitse huoneita", "manageRooms")},
+                {3, std::tuple("Mene toihin", "work")},
+                {4, std::tuple("Mene nukkumaan", "sleep")},
+                {5, std::tuple("Lopeta peli", "endScreen")}
+            };
+            }
         }
 
         else if (getMenuState() == "reserveRoom")
@@ -53,7 +69,10 @@ void Application::start()
         else if (getMenuState() == "reserveRoomSelection")
         {
             // Prints the available rooms in a list that the user can use to select the room they want
+            std::cout << std::endl << "Huoneen voi valita antamalla huoneen edessa olevalla numerolla." << std::endl;
             std::cout << std::endl << "Vapaana olevat huoneet: " << std::endl;
+
+            // Overcomplicated way to print all the rooms while splitting them to pages
             for (int i = 0; i < selectableRoomCount; i++)
             {
                 if (i >= 10 * page && i < 10*page+10)
@@ -66,8 +85,8 @@ void Application::start()
             printMessage("Sivu " + std::to_string(page+1) + "/" + std::to_string(maxPage+1));
 
             inputOptions = {
-                {1, std::tuple("Seuraava sivu", "nextPage")},
-                {2, std::tuple("Edellinen sivu", "previousPage")},
+                {1, std::tuple("Edellinen sivu", "previousPage")},
+                {2, std::tuple("Seuraava sivu", "nextPage")},
                 {3, std::tuple("Palaa aulaan", "back")}
             };
         }
@@ -85,6 +104,16 @@ void Application::start()
             inputOptions = {
                 {1, std::tuple("Tee Toita", "doWork")},
                 {2, std::tuple("Lahde pois toista", "back")}
+            };
+        }
+
+        else if (getMenuState() == "endScreen")
+        {
+            std::cout << std::endl <<"Kiitos kun pelasit pelin loppuun." << std::endl;
+
+            inputOptions = {
+                {1, std::tuple("Palaa takaisin hotelliin", "back")},
+                {2, std::tuple("Poistu pelista", "quit")}
             };
         }
 
@@ -163,8 +192,20 @@ void Application::printWelcomeMessage()
     {
         std::string blankInput { " " };
 
+        // Small basic introduction
         std::cout << "Tervetuloa hotelliin!" << std::endl;
-        std::cout << "Voit aloittaa esimerkiksi varaamalla huoneen, tai jos sinulla on jo varaus, voit lunastaa huoneesi avaimen." << std::endl;
+
+        std::cout << std::endl << "Kannattaa aloittaa varaamalla huone." << std::endl;
+
+        std::cout << std::endl << "Jokaisena paivana taytyy kayda toissa, jotta ansaitset lisaa saldoa." << std::endl;
+        std::cout << "Et voi edistya seuraavaan paivaan, jos et ole kaynyt toissa, eika toissa voi kayda," << std::endl;
+        std::cout << "jos sinulla ei ole huonetta." << std::endl;
+
+        std::cout << std::endl << "Taman sovelluksen idea on olla ikaan kuin pieni peli ja tarkoituksena on hallita saldoa." << std::endl;
+        std::cout << "Peli loppuu kun saavutat 1 000 000 euron saldon." << std::endl;
+
+        std::cout << std::endl << "Yhden hengen huone antaa sinulle 1 tyokerran lisaa." << std::endl;
+        std::cout << "Kahden hengen huone antaa sinulle 2 tyokertaa lisaa." << std::endl;
 
         // Pauses the application until the user proceeds
         std::cout << std::endl << "Paina ENTER jatkaaksesi" << std::endl;
@@ -236,6 +277,7 @@ void Application::processUserInput(std::string userInput)
         setMenuState("reserveRoom");
     }
 
+    // Opens the room selector with specific filters
     else if (userInput == "reserveRoomSingle")
     {
         setMenuState("reserveRoomSelection");
@@ -243,6 +285,7 @@ void Application::processUserInput(std::string userInput)
         getRooms(false, 1);
     }
 
+    // Opens the room selector with specific filters
     else if (userInput == "reserveRoomDouble")
     {
         setMenuState("reserveRoomSelection");
@@ -250,6 +293,7 @@ void Application::processUserInput(std::string userInput)
         getRooms(false, 2);
     }
 
+    // Increases the page
     else if (userInput == "nextPage")
     {
         if (page < maxPage)
@@ -258,6 +302,7 @@ void Application::processUserInput(std::string userInput)
         }
     }
 
+    // Decreases the page
     else if (userInput == "previousPage")
     {
         if (page > 0)
@@ -279,12 +324,13 @@ void Application::processUserInput(std::string userInput)
         setWorkNumber(rand() % 8 + 4);
     }
 
+    // Advances the day
     else if (userInput == "sleep")
     {
-        if (workDone)
+        if (workDone > 0)
         {
             day += 1;
-            workDone = false;
+            workDone = 0;
         }
         else 
         {
@@ -302,15 +348,26 @@ void Application::processUserInput(std::string userInput)
             // Gets the paycheck, random between 40-100 euros
             int payCheck = rand() % 60 + 40;
             balance += payCheck;
-            workDone = true;
+            workDone += 1;
 
             // Returns you back to the hotel and gives you the paycheck
             printMessage("Sait tyot tehtya ja palasit takaisin hotellille. Ansaitsit " + std::to_string(payCheck) + " euroa.");
+
+            if (balance > 999999) 
+            {
+                printMessage("Sinulla on nyt 1 000 000 euroa. Voit halutessasi lopettaa pelin.");
+            }
+
             setMenuState("hotelMain");
         }
 
         // Decreases the work amount
         setWorkNumber(getWorkNumber() - 1);
+    }
+
+    else if (userInput == "endScreen")
+    {
+        setMenuState("endScreen");
     }
 
     else // Invalid input
