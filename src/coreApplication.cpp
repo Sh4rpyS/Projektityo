@@ -42,15 +42,16 @@ void Application::start()
                 {5, std::tuple("Lopeta", "quit")}
             };
 
+            // Adds the ending when the player reaches 1 000 000 euros
             if (balance > 999999)
             {
                 inputOptions = {
-                {1, std::tuple("Varaa huone", "reserveRoom")},
-                {2, std::tuple("Hallitse huoneita", "manageRooms")},
-                {3, std::tuple("Mene toihin", "work")},
-                {4, std::tuple("Mene nukkumaan", "sleep")},
-                {5, std::tuple("Lopeta peli", "endScreen")}
-            };
+                    {1, std::tuple("Varaa huone", "reserveRoom")},
+                    {2, std::tuple("Hallitse huoneita", "manageRooms")},
+                    {3, std::tuple("Mene toihin", "work")},
+                    {4, std::tuple("Mene nukkumaan", "sleep")},
+                    {5, std::tuple("Lopeta peli", "endScreen")}
+                };
             }
         }
 
