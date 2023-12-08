@@ -45,13 +45,7 @@ void Application::start()
             // Adds the ending when the player reaches 1 000 000 euros
             if (balance > 999999)
             {
-                inputOptions = {
-                    {1, std::tuple("Varaa huone", "reserveRoom")},
-                    {2, std::tuple("Hallitse huoneita", "manageRooms")},
-                    {3, std::tuple("Mene toihin", "work")},
-                    {4, std::tuple("Mene nukkumaan", "sleep")},
-                    {5, std::tuple("Lopeta peli", "endScreen")}
-                };
+                inputOptions[5] = std::tuple("Lopeta peli", "endScreen");
             }
         }
 
@@ -70,25 +64,45 @@ void Application::start()
         else if (getMenuState() == "reserveRoomSelection")
         {
             // Prints the available rooms in a list that the user can use to select the room they want
-            std::cout << std::endl << "Huoneen voi valita antamalla huoneen edessa olevalla numerolla." << std::endl;
+            std::cout << std::endl << "Huoneen voi valita antamalla syotteeseen huoneen edessa olevan numeron." << std::endl;
             std::cout << std::endl << "Vapaana olevat huoneet: " << std::endl;
+
+            inputOptions = {
+                {1, std::tuple("Edellinen sivu", "pageDown")},
+                {2, std::tuple("Seuraava sivu", "pageUp")},
+                {3, std::tuple("Palaa aulaan", "back")}
+            };
 
             // Overcomplicated way to print all the rooms while splitting them to pages
             for (int i = 0; i < selectableRoomCount; i++)
             {
                 if (i >= 10 * page && i < 10*page+10)
                 {
-                    std::cout << i - (page*10) + 10 << ": Huone " << rooms[selectableRooms[i]]->getRoomNumber() << std::endl;
+                    std::cout << i - (page * 10) + 10 << ": Huone " << rooms[selectableRooms[i]]->getRoomNumber() << std::endl;
+                    inputOptions[i - (page * 10) + 10] = std::tuple(NULL, std::to_string(i - (page * 10) + 10));
                 }
             }
 
             // Prints the page number
             printMessage("Sivu " + std::to_string(page+1) + "/" + std::to_string(maxPage+1));
+        }
+
+        // Reservation confirmation scene
+        else if (getMenuState() == "reserveSelectedRoom")
+        {
+            std::cout << std::endl;
+
+            // Prints the room statistics
+            printMessage("Huone " + std::to_string(rooms[selectableRooms[selectedRoom]]->getRoomNumber()));
+            std::cout << "Oiden maara: " << page + 1 << " yo(ta)" << std::endl;
+            std::cout << "Huoneen koko: " << rooms[selectableRooms[selectedRoom]]->getRoomSize() << " henkilo(a)" << std::endl;
+            std::cout << "Huoneen hinta: " << (rooms[selectableRooms[selectedRoom]]->getRoomCost() * (page + 1)) << " euroa" << std::endl;
 
             inputOptions = {
-                {1, std::tuple("Edellinen sivu", "previousPage")},
-                {2, std::tuple("Seuraava sivu", "nextPage")},
-                {3, std::tuple("Palaa aulaan", "back")}
+                {1, std::tuple("Varaa huone", "confirmReservation")},
+                {2, std::tuple("Vahenna oiden maaraa", "pageDown")},
+                {3, std::tuple("Lisaa oiden maaraa", "pageUp")},
+                {4, std::tuple("Peruuta varaus", "back")}
             };
         }
 
@@ -99,6 +113,7 @@ void Application::start()
             };
         }
 
+        // Work scene
         else if (getMenuState() == "work")
         {
             printMessage("Tee toita: " + std::to_string(getWorkNumber()) + " kertaa.");
@@ -108,6 +123,7 @@ void Application::start()
             };
         }
 
+        // Special end scene if the user gets million euros
         else if (getMenuState() == "endScreen")
         {
             std::cout << std::endl <<"Kiitos kun pelasit pelin loppuun." << std::endl;
@@ -133,21 +149,30 @@ void Application::createRooms(int randomRoomCount)
     {
         // Makes half of the rooms to be 2 person rooms
         int roomSize { 1 };
+        int roomCost { 100 };
         if (i >= (int)(roomCount/2))
         {
             roomSize = 2;
+            roomCost = 150;
+        }
+
+        // 20% chance for the room to have a discounted price
+        if (rand() % 10 >= 8)
+        {
+            // Makes the reduction either 10% or 20%
+            roomCost *= (1.0 - ((float)(rand() % 2 + 1) / 10.0));
         }
 
         // 30% chance for the room to be reserved
         bool reserved { false };
-        
         if (rand() % 10 >= 7)
         {
             reserved = true;
             reservedRooms += 1;
         }
 
-        rooms[i] = new Room(reserved, roomSize, i + 1);
+        // Adds the rooms to a list
+        rooms[i] = new Room(reserved, roomSize, i + 1, roomCost);
     }
 
     freeRooms = roomCount - reservedRooms;
@@ -157,6 +182,7 @@ void Application::getRooms(bool reserveStatus, int roomSize)
 {
     selectableRoomCount = 0;
 
+    // Goes through the rooms and checks if they match the filters
     for (int i = 0; i < roomCount; i++)
     {
         if (rooms[i]->getRoomReserveStatus() == reserveStatus && rooms[i]->getRoomSize() == roomSize)
@@ -166,6 +192,7 @@ void Application::getRooms(bool reserveStatus, int roomSize)
         }
     }
 
+    // Gets the max page
     maxPage = (int)(selectableRoomCount / 10);
 
     if ((int)(selectableRoomCount % 10 == 0))
@@ -193,7 +220,7 @@ void Application::printWelcomeMessage()
     {
         std::string blankInput { " " };
 
-        // Small basic introduction
+        // Short basic introduction
         std::cout << "Tervetuloa hotelliin!" << std::endl;
 
         std::cout << std::endl << "Kannattaa aloittaa varaamalla huone." << std::endl;
@@ -229,6 +256,12 @@ std::string Application::printAndGetUserInput(std::map<int, std::tuple<std::stri
     // Loops through the possible input options and presents them
     for (auto inputOption : inputOptions)
     {
+        // Hard limits the options to 10
+        if (inputOption.first > 9)
+        {
+            continue;
+        }
+
         std::cout << inputOption.first << ": " << std::get<0>(inputOption.second) << std::endl;
     }
 
@@ -247,6 +280,12 @@ std::string Application::printAndGetUserInput(std::map<int, std::tuple<std::stri
 
         // 0 will make the application ask again
         return "invalid";
+    }
+
+    // If the value is between 10-19 then it is most likely about room selection, so the input will work a bit differently
+    if (inputValue > 9 && inputValue < 20)
+    {
+        return std::to_string(inputValue);
     }
 
     // Returns the user input for further inspection
@@ -294,8 +333,31 @@ void Application::processUserInput(std::string userInput)
         getRooms(false, 2);
     }
 
-    // Increases the page
-    else if (userInput == "nextPage")
+    else if (userInput == "confirmReservation")
+    {
+        // Checks if the user has enough balance
+        if (balance > (page + 1) * rooms[selectableRooms[selectedRoom]]->getRoomCost())
+        {
+            // Takes balance out from your account
+            balance -= (page + 1) * rooms[selectableRooms[selectedRoom]]->getRoomCost();
+
+            // Reserves the room
+            rooms[selectableRooms[selectedRoom]]->setReservation(true);
+
+            // Reserves the room for a set amount of time, page = day, just a reused variable
+            rooms[selectableRooms[selectedRoom]]->setRoomTime(page + 1);
+
+            setMenuState("hotelMain");
+            printMessage("Varasit huoneen " + std::to_string(rooms[selectableRooms[selectedRoom]]->getRoomNumber()));
+        }
+        else // Otherwise tells the user they don't have enough balance
+        {
+            printMessage("Sinulla ei ole tarpeeksi saldoa");
+        }
+    }
+
+    // Increases the page number, also used to set the night count
+    else if (userInput == "pageUp")
     {
         if (page < maxPage)
         {
@@ -303,8 +365,8 @@ void Application::processUserInput(std::string userInput)
         }
     }
 
-    // Decreases the page
-    else if (userInput == "previousPage")
+    // Decreases the page number, also used to set the night count
+    else if (userInput == "pageDown")
     {
         if (page > 0)
         {
@@ -354,6 +416,7 @@ void Application::processUserInput(std::string userInput)
             // Returns you back to the hotel and gives you the paycheck
             printMessage("Sait tyot tehtya ja palasit takaisin hotellille. Ansaitsit " + std::to_string(payCheck) + " euroa.");
 
+            // Prints a special message if the user has million euros
             if (balance > 999999) 
             {
                 printMessage("Sinulla on nyt 1 000 000 euroa. Voit halutessasi lopettaa pelin.");
@@ -371,9 +434,18 @@ void Application::processUserInput(std::string userInput)
         setMenuState("endScreen");
     }
 
-    else // Invalid input
+    else if (userInput == "invalid") // Invalid input
     {
         printMessage("Anteeksi, tama ei ollut vaihtoehto.");
+    }
+
+    else
+    {
+        // Sets the variables ready for room reservation
+        maxPage = 9;
+        page = 0;
+        selectedRoom = (std::stoi(userInput) - 10) + (page * 10);
+        setMenuState("reserveSelectedRoom");
     }
 }
 

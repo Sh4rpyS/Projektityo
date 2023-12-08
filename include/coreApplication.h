@@ -16,6 +16,8 @@
 class Application {
 public:
     void start();
+
+private:
     void stop();
 
     void printWelcomeMessage();
@@ -31,8 +33,7 @@ public:
     
     std::string getMenuState();
     void setMenuState(std::string state);
-
-private:
+    
     // Will contain all the rooms in a list
     // First value is the room ID, and the second value stores the memory address of the room
     std::map<int, Room*> rooms;
@@ -61,5 +62,7 @@ private:
     int maxPage { 0 };
     int selectableRooms[300] = {};
     int selectableRoomCount { 0 };
+    int selectedRoom { -1 };
     void getRooms(bool reserveStatus, int roomSize);
+    
 };
