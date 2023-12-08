@@ -4,6 +4,7 @@
 
 // General usage (Lists and stuff)
 #include <map>
+#include <vector>
 #include <string>
 #include <tuple>
 
@@ -69,8 +70,9 @@ private:
     // Variables used for room reservation
     int page { 0 };
     int maxPage { 0 };
-    int selectableRooms[300] = {};
+    int selectableRooms[300];
+    std::vector<int> ownedRooms;
     int selectableRoomCount { 0 };
-    int selectedRoom { -1 };
+    int selectedRoom { 0 };
     void getRooms(bool reserveStatus, int roomSize);
 };

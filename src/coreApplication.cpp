@@ -83,7 +83,7 @@ void Application::update()
         {
             if (i >= 10 * page && i < 10*page+10)
             {
-                std::cout << i - (page * 10) + 10 << ": Huone " << rooms[selectableRooms[i]]->getRoomNumber() << std::endl;
+                std::cout << i - (page * 10) + 10 << ": Huone " << rooms[selectableRooms[i]]->getRoomNumber() << " | (" << rooms[selectableRooms[i]]->getRoomCost() << " euroa/yo)" << std::endl;
                 inputOptions[i - (page * 10) + 10] = std::tuple(NULL, std::to_string(i - (page * 10) + 10));
             }
         }
@@ -113,9 +113,36 @@ void Application::update()
 
     else if (getMenuState() == "manageRooms")
     {
-        inputOptions = {
-            {1, std::tuple("Palaa aulaan", "back")}
-        };
+        if (ownedRooms.size() > 0)
+        {
+            // Prints the available rooms in a list that the user can use to select the room they want
+            std::cout << std::endl << "Omistamasi huoneet: " << std::endl;
+
+            inputOptions = {
+                {1, std::tuple("Edellinen sivu", "pageDown")},
+                {2, std::tuple("Seuraava sivu", "pageUp")},
+                {3, std::tuple("Palaa aulaan", "back")}
+            };
+
+            // Overcomplicated way to print all the rooms while splitting them to pages, again
+            for (int i = 0; i < ownedRooms.size(); i++)
+            {
+                if (i >= 10 * page && i < 10 * page + 10)
+                {
+                    std::cout << "- Huone " << rooms[ownedRooms[i]]->getRoomNumber() << " | (" << rooms[ownedRooms[i]]->getRoomTime() << " yota jaljella)" << std::endl;
+                }
+            }
+
+            // Prints the page number
+            printMessage("Sivu " + std::to_string(page+1) + "/" + std::to_string(maxPage+1));
+        }
+        else
+        {
+            printMessage("Sinulla ei ole omia varauksia");
+            inputOptions = {
+                {1, std::tuple("Palaa aulaan", "back")},
+            };
+        }
     }
 
     // Work scene
@@ -167,16 +194,19 @@ void Application::createRooms(int randomRoomCount)
             roomCost *= (1.0 - ((float)(rand() % 2 + 1) / 10.0));
         }
 
+        int roomTime = 0;
+
         // 30% chance for the room to be reserved
         bool reserved { false };
         if (rand() % 10 >= 7)
         {
             reserved = true;
             reservedRooms += 1;
+            roomTime = rand() % 10 + 1;
         }
 
         // Adds the rooms to a list
-        rooms[i] = new Room(reserved, roomSize, i + 1, roomCost);
+        rooms[i] = new Room(reserved, roomSize, i + 1, roomCost, roomTime);
     }
 
     freeRooms = roomCount - reservedRooms;
@@ -328,23 +358,27 @@ void Application::processUserInput(std::string userInput)
     else if (userInput == "confirmReservation")
     {
         // Checks if the user has enough balance
-        if (balance > (page + 1) * rooms[selectableRooms[selectedRoom]]->getRoomCost())
+        if (balance >= (page + 1) * rooms[selectableRooms[selectedRoom]]->getRoomCost())
         {
             // Takes balance out from your account
             balance -= (page + 1) * rooms[selectableRooms[selectedRoom]]->getRoomCost();
 
             // Reserves the room
-            rooms[selectableRooms[selectedRoom]]->setReservation(true);
+            rooms[selectableRooms[selectedRoom]]->setRoomReservation(true);
+            rooms[selectableRooms[selectedRoom]]->setRoomOwner(true);
 
             // Reserves the room for a set amount of time, page = day, just a reused variable
             rooms[selectableRooms[selectedRoom]]->setRoomTime(page + 1);
 
+            // Adds the room to the owned rooms list
+            ownedRooms.push_back(rooms[selectableRooms[selectedRoom]]->getRoomNumber()-1);
+
             setMenuState("hotelMain");
-            printMessage("Varasit huoneen " + std::to_string(rooms[selectableRooms[selectedRoom]]->getRoomNumber()));
+            printMessage("Varasit huoneen " + std::to_string(rooms[selectableRooms[selectedRoom]]->getRoomNumber()) + ".");
         }
         else // Otherwise tells the user they don't have enough balance
         {
-            printMessage("Sinulla ei ole tarpeeksi saldoa");
+            printMessage("Sinulla ei ole tarpeeksi saldoa.");
         }
     }
 
@@ -369,6 +403,12 @@ void Application::processUserInput(std::string userInput)
     // This lets you into your rooms
     else if (userInput == "manageRooms")
     {
+        maxPage = (int)(ownedRooms.size() / 10);
+        if ((int)(ownedRooms.size() % 10 == 0))
+        {
+            maxPage -= 1;
+        }
+        page = 0;
         setMenuState("manageRooms");
     }
 
@@ -382,12 +422,57 @@ void Application::processUserInput(std::string userInput)
     // Advances the day
     else if (userInput == "sleep")
     {
-        if (workDone > 0)
+        if (workDone > 0 && ownedRooms.size() > 0)
         {
             day += 1;
             workDone = 0;
+
+            // Takes away one day from the timer of the reservation
+            for (int i = 0; i < roomCount; i++)
+            {
+                if (rooms[i]->getRoomReserveStatus())
+                {
+                    rooms[i]->setRoomTime(rooms[i]->getRoomTime() - 1);
+
+                    // If the room still has time, continue onto the next one in the list
+                    if (rooms[i]->getRoomTime() > 0)
+                    {
+                        continue;
+                    }
+
+                    // If the room is runs out of time, it gets unreserved
+                    rooms[i]->setRoomReservation(false);
+                    
+                    // If the room was owned by someone other than the user, reserve another one
+                    if (rooms[i]->getRoomOwner())
+                    {
+                        rooms[i]->setRoomOwner(false);
+                        std::erase(ownedRooms, i);
+                    }
+                    else
+                    {
+                        // Goes through rooms until it finds an empty one
+                        // Maybe not the most optimal, but should be fine in this situation
+                        while (true)
+                        {
+                            // Reserves the room and breaks the loop
+                            int randomRoom = rand() % roomCount;
+                            if (!rooms[randomRoom]->getRoomReserveStatus())
+                            {  
+                                rooms[randomRoom]->setRoomReservation(true);
+                                rooms[randomRoom]->setRoomTime(rand() % 10 + 1);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
-        else 
+        else if (ownedRooms.size() == 0)
+        {
+            printMessage("Sinulla ei ole huonetta.");
+        }
+        else
         {
             printMessage("Sinun taytyy suorittaa paivan tyot mennaksesi nukkumaan.");
         }
@@ -401,7 +486,7 @@ void Application::processUserInput(std::string userInput)
         if (getWorkNumber() <= 1)
         {
             // Gets the paycheck, random between 40-100 euros
-            int payCheck = rand() % 60 + 40;
+            int payCheck = rand() % 100 + 60;
             balance += payCheck;
             workDone += 1;
 

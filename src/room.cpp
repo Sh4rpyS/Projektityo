@@ -1,15 +1,16 @@
 #include "room.h"
 
 // Room constructor
-Room::Room(bool reserved, int size, int number, int cost)
+Room::Room(bool reserved, int size, int number, int cost, int time)
 {
     reservationStatus = reserved;
     roomSize = size;
     roomNumber = number;
     roomCost = cost;
+    roomTime = time;
 }
 
-void Room::setReservation(bool reservation)
+void Room::setRoomReservation(bool reservation)
 {
     reservationStatus = reservation;
 }
@@ -42,4 +43,19 @@ int Room::getRoomCost()
 int Room::getRoomSize()
 {
     return roomSize;
+}
+
+int Room::getRoomTime()
+{
+    return roomTime;
+}
+
+bool Room::getRoomOwner()
+{
+    return ownedByUser;
+}
+
+void Room::setRoomOwner(bool userIsOwner)
+{
+    ownedByUser = userIsOwner;
 }
