@@ -53,6 +53,8 @@ private:
     long balance { 0 };
     int day { 0 };
     int workDone { 0 };
+    int availableWork { 0 };
+    int getAvailableWorkCount();
 
     std::string menuState { " " };
 

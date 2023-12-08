@@ -16,6 +16,7 @@ void Application::start()
 
     balance = 500;
     day = 1;
+    availableWork = 1;
     menuState = "start";
     runState = true;
 
@@ -42,7 +43,7 @@ void Application::update()
         inputOptions = {
             {1, std::tuple("Varaa huone", "reserveRoom")},
             {2, std::tuple("Hallitse huoneita", "manageRooms")},
-            {3, std::tuple("Mene toihin", "work")},
+            {3, std::tuple("Mene toihin | (" + std::to_string(workDone) + "/" + std::to_string(availableWork) + ")", "work")},
             {4, std::tuple("Mene nukkumaan", "sleep")},
             {5, std::tuple("Lopeta", "quit")}
         };
@@ -138,7 +139,7 @@ void Application::update()
         }
         else
         {
-            printMessage("Sinulla ei ole omia varauksia");
+            printMessage("Sinulla ei ole omia varauksia.");
             inputOptions = {
                 {1, std::tuple("Palaa aulaan", "back")},
             };
@@ -256,6 +257,8 @@ void Application::printWelcomeMessage()
 
         std::cout << std::endl << "Yhden hengen huone antaa sinulle 1 tyokerran lisaa." << std::endl;
         std::cout << "Kahden hengen huone antaa sinulle 2 tyokertaa lisaa." << std::endl;
+
+        std::cout << std::endl << "Tehnyt: Veeti Tuomola" << std::endl;
 
         // Pauses the application until the user proceeds
         std::cout << std::endl << "Paina ENTER jatkaaksesi" << std::endl;
@@ -415,8 +418,16 @@ void Application::processUserInput(std::string userInput)
     // Makes you go to your workplace
     else if (userInput == "work")
     {
-        setMenuState("work");
-        setWorkNumber(rand() % 8 + 4);
+        // Checks if you can are able to work
+        if (workDone < availableWork)
+        {
+            setMenuState("work");
+            setWorkNumber(rand() % 8 + 4);
+        }
+        else 
+        {
+            printMessage("Olet tehnyt kaikki tyot talta paivalta.");
+        }
     }
 
     // Advances the day
@@ -426,6 +437,7 @@ void Application::processUserInput(std::string userInput)
         {
             day += 1;
             workDone = 0;
+            availableWork = getAvailableWorkCount();
 
             // Takes away one day from the timer of the reservation
             for (int i = 0; i < roomCount; i++)
@@ -468,13 +480,14 @@ void Application::processUserInput(std::string userInput)
                 }
             }
         }
+        // Gives a message if you don't own a room
         else if (ownedRooms.size() == 0)
         {
             printMessage("Sinulla ei ole huonetta.");
         }
         else
         {
-            printMessage("Sinun taytyy suorittaa paivan tyot mennaksesi nukkumaan.");
+            printMessage("Sinun taytyy suorittaa ainakin yhdet tyot ennenkuin voit nukkua.");
         }
     }
 
@@ -486,7 +499,7 @@ void Application::processUserInput(std::string userInput)
         if (getWorkNumber() <= 1)
         {
             // Gets the paycheck, random between 40-100 euros
-            int payCheck = rand() % 100 + 60;
+            int payCheck = rand() % 100 + 80;
             balance += payCheck;
             workDone += 1;
 
@@ -548,4 +561,18 @@ void Application::printMessage(std::string message)
         std::cout << "-";
     }
     std::cout << "'" << std::endl;
+}
+
+// Gets the amount of work the user can do daily
+int Application::getAvailableWorkCount()
+{
+    int avlbWork { 1 };
+
+    // Goes through the owned rooms and adds either 1 or 2 to available work
+    for (auto ownedRoom : ownedRooms)
+    {
+        avlbWork += rooms[ownedRoom]->getRoomSize();
+    }
+
+    return avlbWork;
 }

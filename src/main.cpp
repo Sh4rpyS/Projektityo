@@ -6,6 +6,7 @@
 
 int main()
 {
+    // Creates an application instance and starts it
     Application *mainApplication = new Application();
     mainApplication->start();
 }
