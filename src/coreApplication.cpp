@@ -532,7 +532,7 @@ void Application::processUserInput(std::string userInput)
     else
     {
         // Sets the variables ready for room reservation
-        maxPage = 9;
+        maxPage = 13;
         page = 0;
         selectedRoom = (std::stoi(userInput) - 10) + (page * 10);
         setMenuState("reserveSelectedRoom");
