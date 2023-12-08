@@ -33,7 +33,7 @@ void Application::start()
 void Application::update()
 {
     // Prints the balance of the user
-    printMessage("Saldo: " + std::to_string(balance) + " euroa. | Paiva " + std::to_string(day));
+    printMessage("Saldo: " + std::to_string(balance) + " euroa | Paiva " + std::to_string(day));
 
     if (getMenuState() == "hotelMain")
     {
@@ -99,9 +99,9 @@ void Application::update()
 
         // Prints the room statistics
         printMessage("Huone " + std::to_string(rooms[selectableRooms[selectedRoom]]->getRoomNumber()));
-        std::cout << "Oiden maara: " << page + 1 << " yo(ta)" << std::endl;
-        std::cout << "Huoneen koko: " << rooms[selectableRooms[selectedRoom]]->getRoomSize() << " henkilo(a)" << std::endl;
-        std::cout << "Huoneen hinta: " << (rooms[selectableRooms[selectedRoom]]->getRoomCost() * (page + 1)) << " euroa" << std::endl;
+        std::cout << "- Oiden maara: " << page + 1 << " yo(ta)" << std::endl;
+        std::cout << "- Huoneen koko: " << rooms[selectableRooms[selectedRoom]]->getRoomSize() << " henkilo(a)" << std::endl;
+        std::cout << "- Huoneen hinta: " << (rooms[selectableRooms[selectedRoom]]->getRoomCost() * (page + 1)) << " euroa" << std::endl;
 
         inputOptions = {
             {1, std::tuple("Varaa huone", "confirmReservation")},
