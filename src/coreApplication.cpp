@@ -14,8 +14,6 @@ void Application::start()
     // Creates the rooms
     createRooms(randomRoomCount);
 
-    std::map<int, std::tuple<std::string, std::string>> inputOptions;
-
     balance = 500;
     day = 1;
     menuState = "start";
@@ -27,116 +25,122 @@ void Application::start()
     // Main loop, ending the loop stops the application
     while (getRunState())
     {
-        // Prints the balance of the user
-        printMessage("Saldo: " + std::to_string(balance) + " euroa. | Paiva " + std::to_string(day));
-
-        if (getMenuState() == "hotelMain")
-        {
-            // Stores all the input options for modularity and better checking
-            // Includes an ID (This is the one that user chooses), which then contains a tuple with the title and the action
-            inputOptions = {
-                {1, std::tuple("Varaa huone", "reserveRoom")},
-                {2, std::tuple("Hallitse huoneita", "manageRooms")},
-                {3, std::tuple("Mene toihin", "work")},
-                {4, std::tuple("Mene nukkumaan", "sleep")},
-                {5, std::tuple("Lopeta", "quit")}
-            };
-
-            // Adds the ending when the player reaches 1 000 000 euros
-            if (balance > 999999)
-            {
-                inputOptions[5] = std::tuple("Lopeta peli", "endScreen");
-            }
-        }
-
-        else if (getMenuState() == "reserveRoom")
-        {
-            // Prints the available room count
-            printMessage(std::to_string(getFreeRoomCount()) + "/" + std::to_string(getRoomCount()) + " huonetta vapaana.");
-
-            inputOptions = {
-                {1, std::tuple("Varaa yhden henkilon huone", "reserveRoomSingle")},
-                {2, std::tuple("Varaa kahden henkilon huone", "reserveRoomDouble")},
-                {3, std::tuple("Palaa aulaan", "back")}
-            };
-        }
-
-        else if (getMenuState() == "reserveRoomSelection")
-        {
-            // Prints the available rooms in a list that the user can use to select the room they want
-            std::cout << std::endl << "Huoneen voi valita antamalla syotteeseen huoneen edessa olevan numeron." << std::endl;
-            std::cout << std::endl << "Vapaana olevat huoneet: " << std::endl;
-
-            inputOptions = {
-                {1, std::tuple("Edellinen sivu", "pageDown")},
-                {2, std::tuple("Seuraava sivu", "pageUp")},
-                {3, std::tuple("Palaa aulaan", "back")}
-            };
-
-            // Overcomplicated way to print all the rooms while splitting them to pages
-            for (int i = 0; i < selectableRoomCount; i++)
-            {
-                if (i >= 10 * page && i < 10*page+10)
-                {
-                    std::cout << i - (page * 10) + 10 << ": Huone " << rooms[selectableRooms[i]]->getRoomNumber() << std::endl;
-                    inputOptions[i - (page * 10) + 10] = std::tuple(NULL, std::to_string(i - (page * 10) + 10));
-                }
-            }
-
-            // Prints the page number
-            printMessage("Sivu " + std::to_string(page+1) + "/" + std::to_string(maxPage+1));
-        }
-
-        // Reservation confirmation scene
-        else if (getMenuState() == "reserveSelectedRoom")
-        {
-            std::cout << std::endl;
-
-            // Prints the room statistics
-            printMessage("Huone " + std::to_string(rooms[selectableRooms[selectedRoom]]->getRoomNumber()));
-            std::cout << "Oiden maara: " << page + 1 << " yo(ta)" << std::endl;
-            std::cout << "Huoneen koko: " << rooms[selectableRooms[selectedRoom]]->getRoomSize() << " henkilo(a)" << std::endl;
-            std::cout << "Huoneen hinta: " << (rooms[selectableRooms[selectedRoom]]->getRoomCost() * (page + 1)) << " euroa" << std::endl;
-
-            inputOptions = {
-                {1, std::tuple("Varaa huone", "confirmReservation")},
-                {2, std::tuple("Vahenna oiden maaraa", "pageDown")},
-                {3, std::tuple("Lisaa oiden maaraa", "pageUp")},
-                {4, std::tuple("Peruuta varaus", "back")}
-            };
-        }
-
-        else if (getMenuState() == "manageRooms")
-        {
-            inputOptions = {
-                {1, std::tuple("Palaa aulaan", "back")}
-            };
-        }
-
-        // Work scene
-        else if (getMenuState() == "work")
-        {
-            printMessage("Tee toita: " + std::to_string(getWorkNumber()) + " kertaa.");
-            inputOptions = {
-                {1, std::tuple("Tee Toita", "doWork")},
-                {2, std::tuple("Lahde pois toista", "back")}
-            };
-        }
-
-        // Special end scene if the user gets million euros
-        else if (getMenuState() == "endScreen")
-        {
-            std::cout << std::endl <<"Kiitos kun pelasit pelin loppuun." << std::endl;
-
-            inputOptions = {
-                {1, std::tuple("Palaa takaisin hotelliin", "back")},
-                {2, std::tuple("Poistu pelista", "quit")}
-            };
-        }
-
-        // Get the user input and process it
-        processUserInput(printAndGetUserInput(inputOptions));
+        update();
     }
+}
+
+// Runs all the time
+void Application::update()
+{
+    // Prints the balance of the user
+    printMessage("Saldo: " + std::to_string(balance) + " euroa. | Paiva " + std::to_string(day));
+
+    if (getMenuState() == "hotelMain")
+    {
+        // Stores all the input options for modularity and better checking
+        // Includes an ID (This is the one that user chooses), which then contains a tuple with the title and the action
+        inputOptions = {
+            {1, std::tuple("Varaa huone", "reserveRoom")},
+            {2, std::tuple("Hallitse huoneita", "manageRooms")},
+            {3, std::tuple("Mene toihin", "work")},
+            {4, std::tuple("Mene nukkumaan", "sleep")},
+            {5, std::tuple("Lopeta", "quit")}
+        };
+
+        // Adds the ending when the player reaches 1 000 000 euros
+        if (balance > 999999)
+        {
+            inputOptions[5] = std::tuple("Lopeta peli", "endScreen");
+        }
+    }
+
+    else if (getMenuState() == "reserveRoom")
+    {
+        // Prints the available room count
+        printMessage(std::to_string(getFreeRoomCount()) + "/" + std::to_string(getRoomCount()) + " huonetta vapaana.");
+
+        inputOptions = {
+            {1, std::tuple("Varaa yhden henkilon huone", "reserveRoomSingle")},
+            {2, std::tuple("Varaa kahden henkilon huone", "reserveRoomDouble")},
+            {3, std::tuple("Palaa aulaan", "back")}
+        };
+    }
+
+    else if (getMenuState() == "reserveRoomSelection")
+    {
+        // Prints the available rooms in a list that the user can use to select the room they want
+        std::cout << std::endl << "Huoneen voi valita antamalla syotteeseen huoneen edessa olevan numeron." << std::endl;
+        std::cout << std::endl << "Vapaana olevat huoneet: " << std::endl;
+
+        inputOptions = {
+            {1, std::tuple("Edellinen sivu", "pageDown")},
+            {2, std::tuple("Seuraava sivu", "pageUp")},
+            {3, std::tuple("Palaa aulaan", "back")}
+        };
+
+        // Overcomplicated way to print all the rooms while splitting them to pages
+        for (int i = 0; i < selectableRoomCount; i++)
+        {
+            if (i >= 10 * page && i < 10*page+10)
+            {
+                std::cout << i - (page * 10) + 10 << ": Huone " << rooms[selectableRooms[i]]->getRoomNumber() << std::endl;
+                inputOptions[i - (page * 10) + 10] = std::tuple(NULL, std::to_string(i - (page * 10) + 10));
+            }
+        }
+
+        // Prints the page number
+        printMessage("Sivu " + std::to_string(page+1) + "/" + std::to_string(maxPage+1));
+    }
+
+    // Reservation confirmation scene
+    else if (getMenuState() == "reserveSelectedRoom")
+    {
+        std::cout << std::endl;
+
+        // Prints the room statistics
+        printMessage("Huone " + std::to_string(rooms[selectableRooms[selectedRoom]]->getRoomNumber()));
+        std::cout << "Oiden maara: " << page + 1 << " yo(ta)" << std::endl;
+        std::cout << "Huoneen koko: " << rooms[selectableRooms[selectedRoom]]->getRoomSize() << " henkilo(a)" << std::endl;
+        std::cout << "Huoneen hinta: " << (rooms[selectableRooms[selectedRoom]]->getRoomCost() * (page + 1)) << " euroa" << std::endl;
+
+        inputOptions = {
+            {1, std::tuple("Varaa huone", "confirmReservation")},
+            {2, std::tuple("Vahenna oiden maaraa", "pageDown")},
+            {3, std::tuple("Lisaa oiden maaraa", "pageUp")},
+            {4, std::tuple("Peruuta varaus", "back")}
+        };
+    }
+
+    else if (getMenuState() == "manageRooms")
+    {
+        inputOptions = {
+            {1, std::tuple("Palaa aulaan", "back")}
+        };
+    }
+
+    // Work scene
+    else if (getMenuState() == "work")
+    {
+        printMessage("Tee toita: " + std::to_string(getWorkNumber()) + " kertaa.");
+        inputOptions = {
+            {1, std::tuple("Tee Toita", "doWork")},
+            {2, std::tuple("Lahde pois toista", "back")}
+        };
+    }
+
+    // Special end scene if the user gets million euros
+    else if (getMenuState() == "endScreen")
+    {
+        std::cout << std::endl <<"Kiitos kun pelasit pelin loppuun." << std::endl;
+
+        inputOptions = {
+            {1, std::tuple("Palaa takaisin hotelliin", "back")},
+            {2, std::tuple("Poistu pelista", "quit")}
+        };
+    }
+
+    // Get the user input and process it
+    processUserInput(printAndGetUserInput(inputOptions));
 }
 
 // Creates the rooms for the hotel
@@ -199,18 +203,6 @@ void Application::getRooms(bool reserveStatus, int roomSize)
     {
         maxPage -= 1;
     }
-}
-
-// Stops the application
-void Application::stop()
-{
-    runState = false;
-}
-
-// Gets the application status, whether the application is running or not
-bool Application::getRunState()
-{
-    return runState;
 }
 
 // This function will be run once when the application is run to welcome the user
@@ -471,46 +463,4 @@ void Application::printMessage(std::string message)
         std::cout << "-";
     }
     std::cout << "'" << std::endl;
-}
-
-// Sets the user's room
-void Application::setMenuState(std::string state)
-{
-    menuState = state;
-}
-
-// Gets the room the user is in
-std::string Application::getMenuState()
-{
-    return menuState;
-}
-
-// Can be used to change the number used in work
-void Application::setWorkNumber(int number)
-{
-    randomWorkNumber = number;
-}
-
-// Returns the work number
-int Application::getWorkNumber()
-{
-    return randomWorkNumber;
-}
-
-// Gets the overall room count
-int Application::getRoomCount()
-{
-    return roomCount;
-}
-
-// Gets the amount of reserved rooms
-int Application::getReservedRoomCount()
-{
-    return reservedRooms;
-}
-
-// Gets the amount of free rooms
-int Application::getFreeRoomCount()
-{
-    return freeRooms;
 }

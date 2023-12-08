@@ -18,10 +18,13 @@ public:
     void start();
 
 private:
+    void update();
     void stop();
 
     void printWelcomeMessage();
     void printMessage(std::string message);
+
+    std::map<int, std::tuple<std::string, std::string>> inputOptions;
 
     std::string printAndGetUserInput(std::map<int, std::tuple<std::string, std::string>> inputOptions);
     void processUserInput(std::string userInput);
@@ -33,7 +36,7 @@ private:
     
     std::string getMenuState();
     void setMenuState(std::string state);
-    
+
     // Will contain all the rooms in a list
     // First value is the room ID, and the second value stores the memory address of the room
     std::map<int, Room*> rooms;
