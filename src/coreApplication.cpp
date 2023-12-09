@@ -137,7 +137,7 @@ void Application::update()
             {
                 if (i >= 10 * page && i < 10 * page + 10)
                 {
-                    std::cout << "- Huone " << rooms[ownedRooms[i]]->getRoomNumber() << " | (" << rooms[ownedRooms[i]]->getRoomTime() << " yota jaljella)" << std::endl;
+                    std::cout << "- Huone " << rooms[ownedRooms[i]]->getRoomNumber() << " | (" << rooms[ownedRooms[i]]->getRoomTime() << " yo(ta) jaljella)" << std::endl;
                 }
             }
 
