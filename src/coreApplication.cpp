@@ -137,7 +137,7 @@ void Application::update()
             {
                 if (i >= 10 * page && i < 10 * page + 10)
                 {
-                    std::cout << "- Huone " << rooms[ownedRooms[i]]->getRoomNumber() << " | (" << rooms[ownedRooms[i]]->getRoomTime() << " yo(ta) jaljella)" << std::endl;
+                    std::cout << "- Huone " << rooms[ownedRooms[i]]->getRoomNumber() << " | " << rooms[ownedRooms[i]]->getRoomSize() << " henkilo(a) | " << rooms[ownedRooms[i]]->getRoomTime() << " yo(ta) jaljella" << std::endl;
                 }
             }
 
@@ -478,6 +478,23 @@ void Application::processUserInput(std::string userInput)
 
                     // If the room is runs out of time, it gets unreserved
                     rooms[i]->setRoomReservation(false);
+
+                    // Sets the room's price back to its normal, and maybe gives it a discount
+                    if (rooms[i]->getRoomSize() == 1) 
+                    {
+                        rooms[i]->setRoomCost(100);
+                    }
+                    else
+                    {
+                        rooms[i]->setRoomCost(150);
+                    }
+
+                    // 20% chance for there to be a discount between 10-20%
+                    if (rand() % 10 >= 8)
+                    {
+                        // Makes the reduction either 10% or 20%
+                        rooms[i]->setRoomCost(rooms[i]->getRoomCost()* (1.0 - ((float)(rand() % 2 + 1) / 10.0)));
+                    }
                     
                     // If the room was owned by someone other than the user, reserve another one
                     if (rooms[i]->getRoomOwner())
