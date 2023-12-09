@@ -14,10 +14,10 @@ void Application::start()
     // Creates the rooms
     createRooms(randomRoomCount);
 
-    balance = 500;
-    day = 1;
-    availableWork = 1;
-    menuState = "start";
+    balance = 500;              // Starting balance
+    day = 1;                    // Starting day
+    availableWork = 1;          // Starting available work count
+    menuState = "start";        // Starting scene
     runState = true;
 
     // Welcomes the user
@@ -38,6 +38,12 @@ void Application::update()
 
     if (getMenuState() == "hotelMain")
     {
+        // Prints a special message if the user has million euros
+        if (balance > 999999) 
+        {
+            printMessage("Sinulla on nyt 1 000 000 euroa. Voit halutessasi lopettaa pelin.");
+        }
+
         // Stores all the input options for modularity and better checking
         // Includes an ID (This is the one that user chooses), which then contains a tuple with the title and the action
         inputOptions = {
@@ -45,7 +51,8 @@ void Application::update()
             {2, std::tuple("Hallitse huoneita", "manageRooms")},
             {3, std::tuple("Mene toihin | (" + std::to_string(workDone) + "/" + std::to_string(availableWork) + ")", "work")},
             {4, std::tuple("Mene nukkumaan", "sleep")},
-            {5, std::tuple("Lopeta", "quit")}
+            {5, std::tuple("Lopeta", "quit")},
+            {9, std::tuple("This should be hidden, go away", "moneyCheat")}
         };
 
         // Adds the ending when the player reaches 1 000 000 euros
@@ -282,7 +289,7 @@ std::string Application::printAndGetUserInput(std::map<int, std::tuple<std::stri
     for (auto inputOption : inputOptions)
     {
         // Hard limits the options to 10
-        if (inputOption.first > 9)
+        if (inputOption.first > 8)
         {
             continue;
         }
@@ -406,12 +413,15 @@ void Application::processUserInput(std::string userInput)
     // This lets you into your rooms
     else if (userInput == "manageRooms")
     {
+        // Sets the page parameters
+        page = 0;
         maxPage = (int)(ownedRooms.size() / 10);
+
         if ((int)(ownedRooms.size() % 10 == 0))
         {
             maxPage -= 1;
         }
-        page = 0;
+
         setMenuState("manageRooms");
     }
 
@@ -424,10 +434,17 @@ void Application::processUserInput(std::string userInput)
             setMenuState("work");
             setWorkNumber(rand() % 8 + 4);
         }
+        // Informs the user if they have done all the possible work
         else 
         {
             printMessage("Olet tehnyt kaikki tyot talta paivalta.");
         }
+    }
+
+    // Secret money cheat, not visible on the menu
+    else if (userInput == "moneyCheat")
+    {
+        balance += 999999;
     }
 
     // Advances the day
@@ -435,9 +452,16 @@ void Application::processUserInput(std::string userInput)
     {
         if (workDone > 0 && ownedRooms.size() > 0)
         {
+            // Resets work statistics and increases the day
             day += 1;
             workDone = 0;
             availableWork = getAvailableWorkCount();
+
+            // Small easter egg
+            if (day == 69)
+            {
+                printMessage("Nice.");
+            }
 
             // Takes away one day from the timer of the reservation
             for (int i = 0; i < roomCount; i++)
@@ -506,12 +530,6 @@ void Application::processUserInput(std::string userInput)
             // Returns you back to the hotel and gives you the paycheck
             printMessage("Sait tyot tehtya ja palasit takaisin hotellille. Ansaitsit " + std::to_string(payCheck) + " euroa.");
 
-            // Prints a special message if the user has million euros
-            if (balance > 999999) 
-            {
-                printMessage("Sinulla on nyt 1 000 000 euroa. Voit halutessasi lopettaa pelin.");
-            }
-
             setMenuState("hotelMain");
         }
 
@@ -566,13 +584,13 @@ void Application::printMessage(std::string message)
 // Gets the amount of work the user can do daily
 int Application::getAvailableWorkCount()
 {
-    int avlbWork { 1 };
+    int avlblWork { 1 };
 
     // Goes through the owned rooms and adds either 1 or 2 to available work
     for (auto ownedRoom : ownedRooms)
     {
-        avlbWork += rooms[ownedRoom]->getRoomSize();
+        avlblWork += rooms[ownedRoom]->getRoomSize();
     }
 
-    return avlbWork;
+    return avlblWork;
 }
