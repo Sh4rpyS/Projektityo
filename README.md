@@ -21,6 +21,7 @@ on selitetty alla:
 Aloitus 
 - Aloitus osiossa selitetään pelin perusmekaniikat lyhyesti. Eteenpäin pääsee 
 painamalla Enter-näppäintä.
+
 Hotellin pääaula
 - Pääaula on koko pelin perusta. Kaikki tiet vievät aina takaisin pääaulaan. 
 Pääaulasta pääset muun muassa varaamaan huoneen, katselemaan 
@@ -31,6 +32,7 @@ Huoneen varaus
 valita haluatko yhden vai kahden henkilön huoneen. Huoneen saat valita 
 vapaiden huoneiden listasta käyttämällä numeroita 10-19. Tämän jälkeen 
 ohjelma antaa sinun valita kuinka moneksi yöksi haluat valita huoneen.
+
 Huoneiden hallinta
 - Valitsemalla ”2” pääset katsomaan mitä huoneita olet varannut. Täältä näet 
 monta yötä huoneissasi on jäljellä ja niiden koon.
@@ -48,3 +50,23 @@ Nukkuminen
 Joka kerta kun olet nukkunut, riippuen kuinka pitkäksi ajaksi huone on varattu, 
 saatat menettää huoneen varauksen. Muista myös, että tarvitsen ainakin 
 yhden huoneen nukkuaksesi.
+
+# Strategia 
+Helpoin tapa edistyä pelissä on varata kahden henkilön huoneita mahdollisimman pitkäksi aikaa, tällä takaat 
+mahdollisimman monta työkertaa päivän ajalle. Huoneilla on mahdollisuus olla 10-20% alennus, kannattaa 
+siis valita näitä huoneita, jotta takaat suurimmat mahdolliset hyödyt huoneesta.
+TÄRKEÄ: Testaamista varten ohjelmasta löytyy myös huijjauskomento, kun olet hotellin pääaulassa, käytä 
+numeroa 9, ja peli antaa sinulle 999 999 €. Tämä on vapaasti käytettävissä.
+
+# Päivissä edistyminen 
+Ohjelman alussa ohjelma arpoo satunnaisen huoneiden määrän välillä 40-300. Noin 30% huoneista on 
+valmiiksi varattuja, joten et voi valita näitä huoneita. Päivien edetessä jotkin näistä huoneista saattaa 
+kuitenkin vapautua, mutta samaan aikaan jotkin huoneet saattavat muuttua varatuiksi.
+
+# Lähdekoodin sisältö 
+Ohjelma on jaettu eri tiedostoihin, joista tärkein on coreApplication.cpp ja coreApplication.h. Näissä 
+tiedostoissa on kaikki tärkein ohjelmakoodi. Ohjelmaa on pyritty kommentoimaan mahdollisimman hyvin ja 
+selvästi, mutta kuten koodikin, on nämäkin kirjoitettu englanniksi.
+Ohjelma toteuttaa kaiken laskennan jokaisen käyttäjän antaman vastauksen jälkeen.
+Ohjelma käyttää C++20 standardia ja on käännetty GCC g++ kääntäjällä käyttäen tätä komentoa:
+- g++ -o HarjoitusTyo.exe src/*.cpp -Iinclude -static -static-libgcc -std=c++20
