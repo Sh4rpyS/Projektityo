@@ -17,6 +17,7 @@ hotellihuonetta omistat (myös huoneen koko vaikuttaa)
 # Ohjelman käyttöliittymä
 Kaikki mitä pelissä tapahtuu, tapahtuu ns. monivalintakäyttöliittymän ympärillä. Käyttöliittymän eri osioita 
 on selitetty alla:
+
 Aloitus 
 - Aloitus osiossa selitetään pelin perusmekaniikat lyhyesti. Eteenpäin pääsee 
 painamalla Enter-näppäintä.
@@ -24,6 +25,7 @@ Hotellin pääaula
 - Pääaula on koko pelin perusta. Kaikki tiet vievät aina takaisin pääaulaan. 
 Pääaulasta pääset muun muassa varaamaan huoneen, katselemaan 
 varaamiasi huoneita, menemään töihin ja nukkumaan seuraavaan päivään.
+
 Huoneen varaus
 - Huoneen varaukseen pääsee valitsemalla ”1”. Tämän jälkeen saat vaihtoehdon 
 valita haluatko yhden vai kahden henkilön huoneen. Huoneen saat valita 
@@ -32,6 +34,7 @@ ohjelma antaa sinun valita kuinka moneksi yöksi haluat valita huoneen.
 Huoneiden hallinta
 - Valitsemalla ”2” pääset katsomaan mitä huoneita olet varannut. Täältä näet 
 monta yötä huoneissasi on jäljellä ja niiden koon.
+
 Työt
 - Ohjelmassa voit ansaita rahaa käymällä töissä. Töihin pääset valitsemalla ”3”, 
 jokaisena päivänä sinun tarvitsee käydä vähintään kerran töissä, tai muuten et 
@@ -39,6 +42,7 @@ voi edistyä seuraavaan päivään. Mahdollisten töiden määrä vaihtelee
 omistamiesi huoneiden perusteella. Jos omistat yhden henkilön huoneen, 
 töiden määrä kasvaa yhdellä, jos omistat kahden henkilön huoneen, niin 
 töiden määrä kasvaa kahdella.
+
 Nukkuminen
 - Kuten edellä mainittiin, voit nukkua vain, jos olet käynyt töissä ainakin kerran. 
 Joka kerta kun olet nukkunut, riippuen kuinka pitkäksi ajaksi huone on varattu, 
