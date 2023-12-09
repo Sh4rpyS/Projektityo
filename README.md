@@ -1,4 +1,4 @@
-# Projektityo
+# Harjoitustyö
  
 Harjoitustyö TAMKin C++ ohjelmointikurssille.
 
