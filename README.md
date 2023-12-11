@@ -7,6 +7,7 @@ jotta ansaitset rahaa. Kaikki koodi on kirjoitettu englanniksi, mutta ohjelman
 tekstit ovat suomeksi. Teksteissä ei kuitenkaan ole ääkkösiä ollenkaan, vaan ”ä” on korvattu ”a”:lla ja ”ö” on 
 korvattu ”o”:lla.
 
+
 Ohjelman perusmekaniikkoihin kuuluu esimerkiksi:
 - Varaa huone, jotta voit nukkua ja edistyä seuraavaan päivään
 - Joka päivä voit käydä töissä tietyn määrän, työn määrä määräytyy siitä, kuinka monta 
