@@ -3,9 +3,7 @@
 Harjoitustyö TAMKin C++ ohjelmointikurssille.
 
 Ohjelma toimii ikään kuin pienenä pelinä, jossa sinun on tarkoitus varata huoneita hotellista ja tehdä töitä, 
-jotta ansaitset rahaa. 
-Arvosana tavoitteeni on 5. Uskon, että ansaitsen arvosanani lisäyksieni ja yleisen laadun takia. Ohjelma 
-myös noudattaa 4-5 arvosanan tehtävänantoa. Kaikki koodi on kirjoitettu englanniksi, mutta ohjelman 
+jotta ansaitset rahaa. Kaikki koodi on kirjoitettu englanniksi, mutta ohjelman 
 tekstit ovat suomeksi. Teksteissä ei kuitenkaan ole ääkkösiä ollenkaan, vaan ”ä” on korvattu ”a”:lla ja ”ö” on 
 korvattu ”o”:lla.
 Ohjelman perusmekaniikkoihin kuuluu esimerkiksi:
